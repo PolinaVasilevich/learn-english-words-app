@@ -1,15 +1,16 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { Context } from "../index";
+
 import HomePage from "../pages/HomePage";
 import { authRoutes, publicRoutes } from "../routes";
 
 const AppRouter = () => {
-  const { user } = useContext(Context);
+  const isAuth = useSelector((state) => state.user.isAuth);
 
   return (
     <Routes>
-      {user.isAuth &&
+      {isAuth &&
         authRoutes.map(({ path, element }) => (
           <Route key={path} path={path} element={element} />
         ))}

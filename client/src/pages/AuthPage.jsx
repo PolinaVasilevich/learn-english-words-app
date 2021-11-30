@@ -1,40 +1,74 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import { Card, Container, Form, Button } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-import { REGISTRATION_ROUTE } from "../utils/consts";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+import { HOME_ROUTE, LOGIN_ROUTE } from "../utils/consts";
+import styled from "styled-components";
+
+import { useToasts } from "react-toast-notifications";
+
+import AuthForm from "../components/authForm/AuthForm";
+import { registration, login } from "../http/userApi";
+import { useDispatch } from "react-redux";
+import { setIsAuth, setUser } from "../store/userSlice";
+
+const Wrapper = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+`;
 
 const AuthPage = () => {
-  const params = useParams();
-  console.log(params);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isLogin = location.pathname === LOGIN_ROUTE;
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
+
+  const { addToast } = useToasts();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let data;
+      if (isLogin) {
+        data = await login(email, password);
+      } else {
+        data = await registration(email, password);
+        addToast("You're have successfully registered", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      }
+
+      dispatch(setUser(data));
+      dispatch(setIsAuth(true));
+
+      navigate(HOME_ROUTE);
+    } catch (e) {
+      addToast(e.response.data.message, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+      console.log(e.response.data.message);
+    }
+  };
 
   return (
-    <Container
-      className="d-flex justify-content-center align-items-center"
-      style={{ height: window.innerHeight - 54 }}
-    >
-      <Card style={{ width: 600 }} className="p-5">
-        <h2 className="m-auto">Authorization!</h2>
-        <Form className="d-flex flex-column">
-          <Form.Control placeholder="Enter your email" className="mt-3" />
-          <Form.Control placeholder="Enter your password" className="mt-3" />
-
-          <div className="mt-3">
-            Don't you have an account?
-            <NavLink
-              to={REGISTRATION_ROUTE}
-              style={{ textDecoration: "none", marginLeft: "4px" }}
-            >
-              Registration
-            </NavLink>
-          </div>
-
-          <Button className="mt-3" variant={"outline-success"}>
-            Login
-          </Button>
-        </Form>
-      </Card>
-    </Container>
+    <Wrapper>
+      <AuthForm
+        isLogin={isLogin}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        onSubmit={onSubmit}
+      />
+    </Wrapper>
   );
 };
 

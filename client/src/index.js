@@ -1,18 +1,17 @@
 import React, { createContext } from "react";
 import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 
 import App from "./App";
-import UserStore from "./store/UserStore";
+
+import "./styles/index.css";
 
 export const Context = createContext(null);
 
 ReactDOM.render(
-  <Context.Provider
-    value={{
-      user: new UserStore(),
-    }}
-  >
+  <Provider store={store}>
     <App />
-  </Context.Provider>,
+  </Provider>,
   document.getElementById("root")
 );
