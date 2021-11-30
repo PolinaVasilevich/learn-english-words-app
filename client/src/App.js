@@ -9,6 +9,7 @@ import AppRouter from "./components/AppRouter";
 import { lightTheme, darkTheme, GlobalStyles } from "./themes";
 import AppHeader from "./components/appHeader/AppHeader";
 import { setIsAuth, setUser } from "./store/userSlice";
+import { Main } from "./components/Main";
 
 const App = () => {
   const [theme, setTheme] = useState("light");
@@ -38,9 +39,12 @@ const App = () => {
     <ToastProvider>
       <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
         <GlobalStyles />
+
         <Router>
           <AppHeader theme={theme} toggleTheme={toggleTheme} />
-          <AppRouter />
+          <Main>
+            <AppRouter />
+          </Main>
         </Router>
       </ThemeProvider>
     </ToastProvider>
