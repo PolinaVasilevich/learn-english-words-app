@@ -37,12 +37,14 @@ const AuthForm = ({
         placeholder="Enter your email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        autocomplete="on"
       />
       <Input
         type="password"
         placeholder="Enter your password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        autocomplete="current-password"
       />
       {isLogin ? <Registration /> : <Login />}
       <Button type="submit">{isLogin ? "Login" : "Register"}</Button>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { HOME_ROUTE, LOGIN_ROUTE } from "../utils/consts";
+import { LOGIN_ROUTE, USER_ROUTE } from "../utils/consts";
 import styled from "styled-components";
 
 import { useToasts } from "react-toast-notifications";
@@ -37,18 +37,20 @@ const AuthPage = () => {
       let data;
       if (isLogin) {
         data = await login(email, password);
+
+        dispatch(setUser(data));
+        navigate(USER_ROUTE);
       } else {
         data = await registration(email, password);
         addToast("You're have successfully registered", {
           appearance: "success",
           autoDismiss: true,
         });
+        dispatch(setUser(data.id));
+        navigate(LOGIN_ROUTE);
       }
 
-      dispatch(setUser(data));
       dispatch(setIsAuth(true));
-
-      navigate(HOME_ROUTE);
     } catch (e) {
       addToast(e.response.data.message, {
         appearance: "error",

@@ -9,7 +9,6 @@ import AppRouter from "./components/AppRouter";
 import { lightTheme, darkTheme, GlobalStyles } from "./themes";
 import AppHeader from "./components/appHeader/AppHeader";
 import { setIsAuth, setUser } from "./store/userSlice";
-import { Main } from "./components/Main";
 
 const App = () => {
   const [theme, setTheme] = useState("light");
@@ -25,11 +24,11 @@ const App = () => {
   useEffect(() => {
     check()
       .then((data) => {
-        dispatch(setUser(true));
+        dispatch(setUser(data));
         dispatch(setIsAuth(true));
       })
       .finally(setLoading(false));
-  }, []);
+  }, [dispatch]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -42,9 +41,8 @@ const App = () => {
 
         <Router>
           <AppHeader theme={theme} toggleTheme={toggleTheme} />
-          <Main>
-            <AppRouter />
-          </Main>
+
+          <AppRouter />
         </Router>
       </ThemeProvider>
     </ToastProvider>

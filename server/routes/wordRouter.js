@@ -4,6 +4,9 @@ const { check } = require("express-validator");
 
 const wordController = require("../controllers/wordController");
 
-router.post(`/words/:userid`, word);
+router.get("/wordlists/:userid", wordController.getWordListsByUser);
+router.get("/wordlist/:id", wordController.getWordListById);
+
+router.post("/wordlist", wordController.addWordList);
 
 module.exports = router;

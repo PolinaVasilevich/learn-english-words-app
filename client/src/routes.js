@@ -1,17 +1,32 @@
 import AdminPage from "./pages/AdminPage";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
+import UserPage from "./pages/UserPage";
+import WordListPage from "./pages/WordListPage";
+
 import {
   ADMIN_ROUTE,
   HOME_ROUTE,
   LOGIN_ROUTE,
   REGISTRATION_ROUTE,
+  USER_ROUTE,
+  WORD_LIST_ROUTE,
 } from "./utils/consts";
 
 export const authRoutes = [
   {
     path: ADMIN_ROUTE,
-    element: AdminPage,
+    element: <AdminPage />,
+  },
+
+  {
+    path: USER_ROUTE,
+    element: <UserPage />,
+  },
+
+  {
+    path: WORD_LIST_ROUTE + "/:id",
+    element: <WordListPage />,
   },
 ];
 

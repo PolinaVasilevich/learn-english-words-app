@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
-import { HOME_ROUTE, LOGIN_ROUTE } from "../../utils/consts";
+import { HOME_ROUTE, LOGIN_ROUTE, USER_ROUTE } from "../../utils/consts";
 
 import { IoMoon, IoSunny } from "react-icons/io5";
 
@@ -26,7 +26,10 @@ const AppHeader = ({ theme, toggleTheme }) => {
       <Wrapper>
         <nav>
           {isAuth ? (
-            <LinkButton onClick={logOut}>Logout</LinkButton>
+            <>
+              <NavLink to={USER_ROUTE}>User page</NavLink>
+              <LinkButton onClick={logOut}>Logout</LinkButton>
+            </>
           ) : (
             <NavLink to={LOGIN_ROUTE}>Sign in</NavLink>
           )}

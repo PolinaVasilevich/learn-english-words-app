@@ -34,6 +34,7 @@ export const ModeSwitcher = styled.div`
 `;
 
 export const LinkButton = styled.button`
+  margin-left: 1rem;
   outline: none;
   border: none;
   background: none;
