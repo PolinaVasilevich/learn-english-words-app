@@ -1,36 +1,77 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 
 const initialState = {
   words: [],
   status: null,
+  loading: false,
   error: null,
 };
 
 const setError = (state, action) => {
-  state.status = "rejected";
+  state.loading = false;
   state.error = action.payload;
 };
 
 export const fetchWordLists = createAsyncThunk(
-  "word/fetchWords",
-  async function (userid) {
-    const response = await axios(
-      process.env.REACT_APP_API_URL + `api/word/wordlists/${userid}`
-    );
-    return response.data;
+  "word/fetchWordLists",
+  async (userid, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + `api/word/wordlists/${userid}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Could not fetch, status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      rejectWithValue(e.message);
+    }
   }
 );
 
 export const addWordList = createAsyncThunk(
   "word/addWordList",
-  async function (newWordList, { rejectWithValue }) {
+  async function (newWordList, { rejectWithValue, dispatch }) {
     try {
-      await axios.post(process.env.REACT_APP_API_URL + `api/word/wordlist`, {
-        ...newWordList,
-      });
-    } catch (error) {
-      return rejectWithValue(error);
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + "api/word/wordlist",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...newWordList }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Could not fetch, status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      dispatch(wordListCreated(data.data));
+    } catch (e) {
+      rejectWithValue(e.message);
+    }
+  }
+);
+
+export const deleteWordList = createAsyncThunk(
+  "word/deleteWordList",
+  async (id, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + `api/word/wordlist/${id}`,
+        { method: "DELETE" }
+      );
+      const data = await response.json();
+      dispatch(wordListDeleted(data.data));
+    } catch (e) {
+      rejectWithValue(e.message);
     }
   }
 );
@@ -42,24 +83,39 @@ export const wordSlice = createSlice({
     setWords: (state, action) => {
       state.words = action.payload;
     },
-    addNewWordList: (state, action) => {
+    wordListCreated: (state, action) => {
       state.words.push(action.payload);
+    },
+
+    wordListDeleted: (state, action) => {
+      state.words = state.words.filter((w) => w._id !== action.payload._id);
     },
   },
   extraReducers: {
     [fetchWordLists.pending]: (state) => {
-      state.status = "loading";
+      state.loading = true;
       state.error = null;
     },
     [fetchWordLists.fulfilled]: (state, action) => {
-      state.status = "resolved";
+      state.loading = false;
       state.words = action.payload;
     },
-    [fetchWordLists.rejected]: (state, action) => setError,
-    [addWordList.rejected]: (state, action) => setError,
+    [fetchWordLists.rejected]: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
+    [addWordList.rejected]: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
+    [deleteWordList.rejected]: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
   },
 });
 
-export const { setWords, addNewWordList } = wordSlice.actions;
+const { actions, reducer } = wordSlice;
+export default reducer;
 
-export default wordSlice.reducer;
+export const { setWords, wordListCreated, wordListDeleted } = actions;

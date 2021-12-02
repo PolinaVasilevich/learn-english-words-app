@@ -2,11 +2,13 @@ import AdminPage from "./pages/AdminPage";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
+import WordLearnPage from "./pages/WordLearnPage";
 import WordListPage from "./pages/WordListPage";
 
 import {
   ADMIN_ROUTE,
   HOME_ROUTE,
+  LEARN_WORD_ROUTE,
   LOGIN_ROUTE,
   REGISTRATION_ROUTE,
   USER_ROUTE,
@@ -27,6 +29,11 @@ export const authRoutes = [
   {
     path: WORD_LIST_ROUTE + "/:id",
     element: <WordListPage />,
+  },
+
+  {
+    path: LEARN_WORD_ROUTE + "/:id",
+    element: <WordLearnPage />,
   },
 ];
 

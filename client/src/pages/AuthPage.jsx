@@ -42,7 +42,7 @@ const AuthPage = () => {
         navigate(USER_ROUTE);
       } else {
         data = await registration(email, password);
-        addToast("You're have successfully registered", {
+        addToast("You have successfully registered", {
           appearance: "success",
           autoDismiss: true,
         });

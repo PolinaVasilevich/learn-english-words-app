@@ -10,6 +10,8 @@ const Wrapper = styled.div`
   background: rgba(0, 0, 0, 0.5);
   position: fixed;
   display: flex;
+
+  z-index: 1;
 `;
 
 const Modal = styled.div`

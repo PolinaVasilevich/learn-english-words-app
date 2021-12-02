@@ -4,3 +4,4 @@ export const REGISTRATION_ROUTE = "/registration";
 export const LOGIN_ROUTE = "/login";
 export const USER_ROUTE = "/user";
 export const WORD_LIST_ROUTE = "/wordlist";
+export const LEARN_WORD_ROUTE = "/learnword";

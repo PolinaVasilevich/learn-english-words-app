@@ -27,7 +27,7 @@ const AppHeader = ({ theme, toggleTheme }) => {
         <nav>
           {isAuth ? (
             <>
-              <NavLink to={USER_ROUTE}>User page</NavLink>
+              <NavLink to={USER_ROUTE}>My word lists</NavLink>
               <LinkButton onClick={logOut}>Logout</LinkButton>
             </>
           ) : (

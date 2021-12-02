@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import XLSX from "xlsx";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchWordLists, addWordList } from "../store/wordSlice";
+import {
+  fetchWordLists,
+  addWordList,
+  deleteWordList,
+} from "../store/wordSlice";
 import Modal from "../components/modal/Modal";
 import List from "../components/List";
 import Card from "../components/card/Card";
-import { useNavigate } from "react-router";
-import { WORD_LIST_ROUTE } from "../utils/consts";
 import { Link } from "react-router-dom";
+import { useToasts } from "react-toast-notifications";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -83,7 +86,9 @@ const CreateListButton = styled.button`
 
 const UserPage = () => {
   const words = useSelector((state) => state.word.words);
-  const status = useSelector((state) => state.word.status);
+  const error = useSelector((state) => state.word.error);
+  const loading = useSelector((state) => state.word.loading);
+
   const user = useSelector((state) => state.user.user);
 
   const [modal, setModal] = useState(false);
@@ -92,8 +97,7 @@ const UserPage = () => {
   const [nameList, setNameList] = useState("");
 
   const dispatch = useDispatch();
-
-  const navigate = useNavigate();
+  const { addToast } = useToasts();
 
   const onUploadFile = (e) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -116,11 +120,27 @@ const UserPage = () => {
     reader.readAsArrayBuffer(file);
     setNameList("");
     setModal(false);
+
+    if (!error) {
+      addToast("You have created new word list successfully", {
+        appearance: "success",
+        autoDismiss: true,
+      });
+    } else {
+      addToast(error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  };
+
+  const removeList = (id) => {
+    dispatch(deleteWordList(id));
   };
 
   useEffect(() => {
     dispatch(fetchWordLists(user.id));
-  }, [user, dispatch]);
+  }, []);
 
   return (
     <div>
@@ -142,12 +162,16 @@ const UserPage = () => {
           </InputFileWrapper>
         </Modal>
       </Wrapper>
-      {words.length && status !== "loading" ? (
+      {words.length && !loading ? (
         <List>
           {words?.map(({ _id, name, words }) => (
-            <Link to={`/wordlist/${_id}`} key={name}>
-              <Card name={name} legthList={words?.length} />
-            </Link>
+            <Card
+              key={name}
+              id={_id}
+              name={name}
+              legthList={words?.length}
+              deleteList={removeList}
+            />
           ))}
         </List>
       ) : null}

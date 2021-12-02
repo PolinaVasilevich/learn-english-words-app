@@ -5,14 +5,28 @@ const TableStyled = styled.table`
   margin: 30px auto;
   table-layout: fixed;
   width: 70vw;
+  max-width: 1240px;
   border-collapse: collapse;
   border: 1px solid var(--grey);
+
+  text-align: center;
 `;
 
 const TableColumn = styled.th`
   width: 20vh;
   padding: 20px;
-  border: 1px solid var(--grey); ;
+  border: 1px solid var(--grey);
+
+  font-weight: var(--fw-normal);
+`;
+
+const FirstColumn = styled.th`
+  width: 20vh;
+  padding: 20px;
+  border: 1px solid var(--grey);
+
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
 `;
 
 const Table = ({ words }) => {
@@ -21,10 +35,10 @@ const Table = ({ words }) => {
       <thead>
         <tr>
           {/* <th></th> */}
-          <TableColumn>Word</TableColumn>
-          <TableColumn>Pronunciation</TableColumn>
-          <TableColumn>Translate</TableColumn>
-          <TableColumn>Definition</TableColumn>
+          <FirstColumn>Word</FirstColumn>
+          <FirstColumn>Pronunciation</FirstColumn>
+          <FirstColumn>Translate</FirstColumn>
+          <FirstColumn>Definition</FirstColumn>
         </tr>
       </thead>
       <tbody>

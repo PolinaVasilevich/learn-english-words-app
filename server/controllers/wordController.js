@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const User = require("../models/User");
 const WordList = require("../models/WordList");
-const Word = require("../models/Word");
 
 class wordController {
   async getWordListsByUser(req, res) {
@@ -25,7 +24,7 @@ class wordController {
   async getWordListById(req, res) {
     try {
       const { id } = req.params;
-      const wordList = await WordList.findOne({ id });
+      const wordList = await WordList.findOne({ _id: id });
 
       res.json(wordList);
     } catch (e) {
@@ -60,9 +59,26 @@ class wordController {
 
       newWordList.save();
 
-      res.status(201).json({ message: "Word list has created" });
+      res
+        .status(201)
+        .json({ message: "Word list has created", data: newWordList });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({ message: "Error! Try again" });
+    }
+  }
+
+  async deleteWordList(req, res) {
+    try {
+      const { id } = req.params;
+      const wordList = await WordList.findByIdAndDelete({ _id: id });
+
+      return res.json({
+        message: `${wordList.name} were deleted successfully!`,
+        data: wordList,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error delete list" });
     }
   }
 }
