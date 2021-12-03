@@ -1,61 +1,12 @@
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+
 import { useParams } from "react-router";
 import { useToasts } from "react-toast-notifications";
-import styled from "styled-components";
 
-const Card = styled.div`
-  width: 100%;
+import { Button } from "../components/MainButton";
 
-  border-radius: var(--radii);
-  background-color: ${(props) => props.theme.baseColor};
-  box-shadow: ${(props) => props.theme.shadow};
-
-  text-align: center;
-
-  cursor: pointer;
-
-  position: relative;
-`;
-
-const CardBody = styled.div`
-  padding: 2rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-export const Input = styled.input`
-  margin-bottom: 1rem;
-  padding: 1rem 2rem;
-  width: 70%;
-
-  border: 1px solid var(--grey);
-  outline: none;
-
-  border-radius: var(--radii);
-  background-color: ${(props) => props.theme.baseColor};
-  color: ${(props) => props.theme.textColor};
-`;
-
-const Button = styled.button`
-  width: 100%;
-  margin-bottom: 1rem;
-  max-width: 150px;
-  padding: 1.2rem;
-
-  text-align: center;
-  background-color: var(--purple);
-  color: ${(props) => props.theme.textColor};
-
-  border-radius: var(--radii);
-
-  outline: none;
-  border: none;
-
-  cursor: pointer;
-`;
+import { Card, CardBody, Input } from "../styles/wordLearnPageStyled";
 
 const WordLearnPage = () => {
   const { id } = useParams();

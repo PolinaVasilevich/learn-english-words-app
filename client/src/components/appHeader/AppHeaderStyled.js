@@ -43,3 +43,8 @@ export const LinkButton = styled.button`
   font-size: var(--fs-md);
   font-weight: var(--fw-bold);
 `;
+
+export const Navigation = styled.nav`
+  display: flex;
+  align-items: center;
+`;

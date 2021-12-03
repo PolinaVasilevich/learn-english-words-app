@@ -2,26 +2,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+
 import Table from "../components/table/Table";
 import { LEARN_WORD_ROUTE } from "../utils/consts";
-
-const Button = styled.button`
-  width: 100%;
-  max-width: 250px;
-  padding: 20px;
-
-  text-align: center;
-  background-color: var(--purple);
-  color: ${(props) => props.theme.textColor};
-
-  border-radius: var(--radii);
-
-  outline: none;
-  border: none;
-
-  cursor: pointer;
-`;
+import { Button } from "../components/MainButton";
 
 const WordListPage = () => {
   const { id } = useParams();

@@ -1,88 +1,26 @@
 import React, { useEffect, useState } from "react";
 import XLSX from "xlsx";
-import styled from "styled-components";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchWordLists,
   addWordList,
   deleteWordList,
 } from "../store/wordSlice";
+
 import Modal from "../components/modal/Modal";
 import List from "../components/List";
 import Card from "../components/card/Card";
-import { Link } from "react-router-dom";
+import { Button } from "../components/MainButton";
 import { useToasts } from "react-toast-notifications";
 
-const Wrapper = styled.div`
-  width: 100%;
-  margin-top: 2rem;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const InputFileWrapper = styled.div`
-  width: 100%;
-  position: relative;
-  margin-top: 20px;
-  text-align: center;
-`;
-
-const InputFile = styled.input.attrs({
-  type: "file",
-  id: "file",
-})`
-  opacity: 0;
-  visibility: hidden;
-  position: absolute;
-`;
-
-const InputText = styled.input.attrs({
-  type: "text",
-})`
-  margin-top: 1.2rem;
-  width: 100%;
-  padding: 0.3rem 1rem;
-
-  outline: none;
-  border: 1px solid var(--grey);
-  border-radius: var(--radii);
-  background-color: ${(props) => props.theme.backgroudColor};
-  color: ${(props) => props.theme.textColor};
-`;
-
-const UploadFileButton = styled.label.attrs({
-  htmlFor: "file",
-})`
-  width: 100%;
-  max-width: 150px;
-  padding: 15px;
-
-  background-color: var(--purple);
-  color: ${(props) => props.theme.textColor};
-
-  border-radius: var(--radii);
-
-  cursor: pointer;
-`;
-
-const CreateListButton = styled.button`
-  width: 100%;
-  max-width: 250px;
-  padding: 20px;
-
-  text-align: center;
-  background-color: var(--purple);
-  color: ${(props) => props.theme.textColor};
-
-  border-radius: var(--radii);
-
-  outline: none;
-  border: none;
-
-  cursor: pointer;
-`;
+import {
+  Wrapper,
+  InputFileWrapper,
+  InputFile,
+  InputText,
+  UploadFileButton,
+} from "../styles/userPageStyled";
 
 const UserPage = () => {
   const words = useSelector((state) => state.word.words);
@@ -146,9 +84,7 @@ const UserPage = () => {
     <div>
       <Wrapper>
         <h1>Create your sets of words for learning</h1>
-        <CreateListButton onClick={toggleModal}>
-          Create new set of words
-        </CreateListButton>
+        <Button onClick={toggleModal}>Create new set of words</Button>
         <Modal modal={modal} toggleModal={toggleModal}>
           <InputText
             placeholder="Enter name of word list"

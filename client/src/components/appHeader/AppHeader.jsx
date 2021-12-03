@@ -5,7 +5,13 @@ import { HOME_ROUTE, LOGIN_ROUTE, USER_ROUTE } from "../../utils/consts";
 
 import { IoMoon, IoSunny } from "react-icons/io5";
 
-import { Header, ModeSwitcher, Wrapper, LinkButton } from "./AppHeaderStyled";
+import {
+  Header,
+  ModeSwitcher,
+  Wrapper,
+  LinkButton,
+  Navigation,
+} from "./AppHeaderStyled";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsAuth, setUser } from "../../store/userSlice";
 
@@ -24,7 +30,7 @@ const AppHeader = ({ theme, toggleTheme }) => {
   return (
     <Header>
       <Wrapper>
-        <nav>
+        <Navigation>
           {isAuth ? (
             <>
               <NavLink to={USER_ROUTE}>My word lists</NavLink>
@@ -33,7 +39,7 @@ const AppHeader = ({ theme, toggleTheme }) => {
           ) : (
             <NavLink to={LOGIN_ROUTE}>Sign in</NavLink>
           )}
-        </nav>
+        </Navigation>
         <ModeSwitcher onClick={toggleTheme}>
           {theme === "light" ? <IoSunny /> : <IoMoon />}
           <span style={{ marginLeft: "0.4rem" }}>{theme} Theme</span>
