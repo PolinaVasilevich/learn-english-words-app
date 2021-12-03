@@ -4,6 +4,7 @@ const WordListSchema = new Schema({
   name: { type: String, required: true },
   words: [
     {
+      isLearned: { type: Boolean, default: false },
       word: String,
       definition: String,
       translate: String,

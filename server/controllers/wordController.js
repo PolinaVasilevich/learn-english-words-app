@@ -71,6 +71,7 @@ class wordController {
   async deleteWordList(req, res) {
     try {
       const { id } = req.params;
+
       const wordList = await WordList.findByIdAndDelete({ _id: id });
 
       return res.json({
@@ -78,7 +79,29 @@ class wordController {
         data: wordList,
       });
     } catch (error) {
-      res.status(500).json({ message: "Error delete list" });
+      res.status(500).json({ message: "Can't delete this list. Try again" });
+    }
+  }
+
+  async updateWordList(req, res) {
+    try {
+      const { id } = req.params;
+      const { wordid } = req.body;
+
+      await WordList.updateOne(
+        {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+        { $set: { "words.$[e1].isLearned": true } },
+
+        {
+          arrayFilters: [{ "e1._id": new mongoose.Types.ObjectId(wordid) }],
+        }
+      );
+
+      res.json({ message: "This word was updated" });
+    } catch (error) {
+      res.status(500).json({ message: "Error update word list" });
     }
   }
 }

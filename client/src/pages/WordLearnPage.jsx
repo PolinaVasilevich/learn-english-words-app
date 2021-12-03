@@ -1,40 +1,45 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useParams } from "react-router";
 import { useToasts } from "react-toast-notifications";
 
 import { Button } from "../components/MainButton";
+import { Spinner } from "../components/spinner/Spinner";
+import { fetchCurrentWordList, learnWord } from "../store/wordSlice";
 
 import { Card, CardBody, Input } from "../styles/wordLearnPageStyled";
 
 const WordLearnPage = () => {
   const { id } = useParams();
-  const [words, setWords] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const { currentWordList, error, loading } = useSelector(
+    (state) => state.word
+  );
+
+  useEffect(() => {
+    dispatch(fetchCurrentWordList(id));
+    getRandomWord();
+  }, []);
+
+  useEffect(() => {
+    getRandomWord();
+  }, [currentWordList]);
 
   const [inputWord, setInputWord] = useState("");
-  const [randomWord, setRandomWord] = useState("");
+  const [randomWord, setRandomWord] = useState({});
 
   const { addToast } = useToasts();
 
-  const getWords = async () => {
-    try {
-      const response = await axios(
-        process.env.REACT_APP_API_URL + `api/word/wordlist/${id}`
-      );
-      const data = response.data;
-
-      setWords(data.words);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const getRandomWord = () => {
-    if (words) {
-      const randomId = Math.floor(Math.random() * words?.length);
+    if (currentWordList.words) {
+      const randomId = Math.floor(
+        Math.random() * currentWordList.words?.length
+      );
 
-      setRandomWord(words[randomId]);
+      setRandomWord(currentWordList.words[randomId]);
     }
   };
 
@@ -44,6 +49,11 @@ const WordLearnPage = () => {
         appearance: "success",
         autoDismiss: true,
       });
+
+      if (!randomWord.isLearned) {
+        dispatch(learnWord({ wordlistid: id, wordid: randomWord._id }));
+      }
+
       setInputWord("");
       getRandomWord();
     } else {
@@ -69,18 +79,12 @@ const WordLearnPage = () => {
     }
   };
 
-  useEffect(() => {
-    getWords();
-  }, []);
-
-  useEffect(() => {
-    getRandomWord();
-  }, [words]);
-
   return (
     <div>
       <Card>
-        {words && (
+        {loading ? (
+          <Spinner />
+        ) : (
           <CardBody>
             <h3>{randomWord.translate}</h3>
             <p>{randomWord.definition}</p>

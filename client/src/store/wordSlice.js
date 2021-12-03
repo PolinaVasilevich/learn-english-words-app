@@ -2,14 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const initialState = {
   words: [],
+  currentWordList: [],
   status: null,
-  loading: false,
+  loading: true,
   error: null,
-};
-
-const setError = (state, action) => {
-  state.loading = false;
-  state.error = action.payload;
 };
 
 export const fetchWordLists = createAsyncThunk(
@@ -27,7 +23,26 @@ export const fetchWordLists = createAsyncThunk(
       const data = await response.json();
       return data;
     } catch (e) {
-      rejectWithValue(e.message);
+      return rejectWithValue(e.message);
+    }
+  }
+);
+
+export const fetchCurrentWordList = createAsyncThunk(
+  "word/fetchCurrentWordList",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + `api/word/wordlist/${id}`
+      );
+      if (!response.ok) {
+        throw new Error(`Could not fetch, status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      return rejectWithValue(e.message);
     }
   }
 );
@@ -47,15 +62,15 @@ export const addWordList = createAsyncThunk(
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`Could not fetch, status: ${response.status}`);
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
 
       dispatch(wordListCreated(data.data));
     } catch (e) {
-      rejectWithValue(e.message);
+      return rejectWithValue(e.message);
     }
   }
 );
@@ -68,10 +83,45 @@ export const deleteWordList = createAsyncThunk(
         process.env.REACT_APP_API_URL + `api/word/wordlist/${id}`,
         { method: "DELETE" }
       );
+
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
       dispatch(wordListDeleted(data.data));
     } catch (e) {
-      rejectWithValue(e.message);
+      return rejectWithValue(e.message);
+    }
+  }
+);
+
+export const learnWord = createAsyncThunk(
+  "word/learnWord",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + `api/word/wordlist/${data.wordlistid}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            wordid: data.wordid,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Can't update this word. Server error.");
+      }
+
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -83,6 +133,7 @@ export const wordSlice = createSlice({
     setWords: (state, action) => {
       state.words = action.payload;
     },
+
     wordListCreated: (state, action) => {
       state.words.push(action.payload);
     },
@@ -101,16 +152,49 @@ export const wordSlice = createSlice({
       state.words = action.payload;
     },
     [fetchWordLists.rejected]: (state, action) => {
+      state.loading = false;
       state.error = action.payload;
+    },
+
+    [fetchCurrentWordList.pending]: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    [fetchCurrentWordList.fulfilled]: (state, action) => {
+      state.loading = false;
+      state.currentWordList = action.payload;
+    },
+    [fetchCurrentWordList.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    [addWordList.pending]: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    [addWordList.fulfilled]: (state) => {
       state.loading = false;
     },
     [addWordList.rejected]: (state, action) => {
+      state.loading = false;
       state.error = action.payload;
+    },
+
+    [deleteWordList.pending]: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    [deleteWordList.fulfilled]: (state) => {
       state.loading = false;
     },
     [deleteWordList.rejected]: (state, action) => {
-      state.error = action.payload;
       state.loading = false;
+      state.error = action.payload;
+    },
+
+    [learnWord.rejected]: (state, action) => {
+      state.error = action.payload;
     },
   },
 });

@@ -12,6 +12,7 @@ import Modal from "../components/modal/Modal";
 import List from "../components/List";
 import Card from "../components/card/Card";
 import { Button } from "../components/MainButton";
+import { Spinner } from "../components/spinner/Spinner.js";
 import { useToasts } from "react-toast-notifications";
 
 import {
@@ -23,9 +24,7 @@ import {
 } from "../styles/userPageStyled";
 
 const UserPage = () => {
-  const words = useSelector((state) => state.word.words);
-  const error = useSelector((state) => state.word.error);
-  const loading = useSelector((state) => state.word.loading);
+  const { words, error, loading } = useSelector((state) => state.word);
 
   const user = useSelector((state) => state.user.user);
 
@@ -41,7 +40,7 @@ const UserPage = () => {
     const file = e.target.files ? e.target.files[0] : null;
     const reader = new FileReader();
 
-    reader.onload = function (e) {
+    reader.onload = function async(e) {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: "array" });
       const sheetName = workbook.SheetNames[0];
@@ -55,21 +54,23 @@ const UserPage = () => {
 
       dispatch(addWordList(newWordList));
     };
+
     reader.readAsArrayBuffer(file);
+
     setNameList("");
     setModal(false);
 
-    if (!error) {
-      addToast("You have created new word list successfully", {
-        appearance: "success",
-        autoDismiss: true,
-      });
-    } else {
-      addToast(error, {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    }
+    // if (!error) {
+    //   addToast("You have created new word list successfully", {
+    //     appearance: "success",
+    //     autoDismiss: true,
+    //   });
+    // } else {
+    //   addToast(error, {
+    //     appearance: "error",
+    //     autoDismiss: true,
+    //   });
+    // }
   };
 
   const removeList = (id) => {
@@ -79,6 +80,18 @@ const UserPage = () => {
   useEffect(() => {
     dispatch(fetchWordLists(user.id));
   }, []);
+
+  useEffect(() => {
+    if (error) {
+      addToast(error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  }, [error]);
+
+  // const errorMessage = error ? <p>{error}</p> : null;
+  const spinner = loading ? <Spinner /> : null;
 
   return (
     <div>
@@ -98,6 +111,10 @@ const UserPage = () => {
           </InputFileWrapper>
         </Modal>
       </Wrapper>
+
+      {/* {errorMessage} */}
+      {spinner}
+
       {words.length && !loading ? (
         <List>
           {words?.map(({ _id, name, words }) => (

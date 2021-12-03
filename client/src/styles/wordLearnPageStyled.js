@@ -9,8 +9,6 @@ export const Card = styled.div`
 
   text-align: center;
 
-  cursor: pointer;
-
   position: relative;
 `;
 

@@ -1,49 +1,49 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 
 import Table from "../components/table/Table";
 import { LEARN_WORD_ROUTE } from "../utils/consts";
 import { Button } from "../components/MainButton";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCurrentWordList } from "../store/wordSlice";
+import { Spinner } from "../components/spinner/Spinner";
+import { useToasts } from "react-toast-notifications";
 
 const WordListPage = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
 
-  const [words, setWords] = useState(null);
-  const [nameList, setNameList] = useState("");
-  const [loading, setLoading] = useState(true);
+  const { currentWordList, error, loading } = useSelector(
+    (state) => state.word
+  );
 
-  const getWords = async () => {
-    try {
-      const { data } = await axios(
-        `${process.env.REACT_APP_API_URL}api/word/wordlist/${id}`
-      );
-
-      setNameList(data.name);
-
-      setWords(data.words);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { addToast } = useToasts();
 
   useEffect(() => {
-    getWords();
+    dispatch(fetchCurrentWordList(id));
   }, []);
+
+  useEffect(() => {
+    if (error) {
+      addToast(error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  }, [error]);
 
   return (
     <div style={{ textAlign: "center" }}>
-      {!loading && (
+      {loading ? (
+        <Spinner />
+      ) : (
         <>
-          <h1>{nameList}</h1>
+          <h1>{currentWordList.name}</h1>
           <Link to={LEARN_WORD_ROUTE + `/${id}`}>
             <Button>Learn this word list</Button>
           </Link>
-
-          <Table words={words} />
+          <Table words={currentWordList.words} />
         </>
       )}
     </div>

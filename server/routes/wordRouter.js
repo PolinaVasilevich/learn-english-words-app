@@ -9,5 +9,6 @@ router.get("/wordlist/:id", wordController.getWordListById);
 
 router.post("/wordlist", wordController.addWordList);
 router.delete("/wordlist/:id", wordController.deleteWordList);
+router.patch("/wordlist/:id", wordController.updateWordList);
 
 module.exports = router;

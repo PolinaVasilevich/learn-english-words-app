@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { IoVolumeHigh } from "react-icons/io5";
 
 const TableStyled = styled.table`
   margin: 30px auto;
@@ -29,12 +30,19 @@ const FirstColumn = styled.th`
   font-weight: var(--fw-bold);
 `;
 
+const listenToPronunciation = (message) => {
+  var msg = new SpeechSynthesisUtterance(message);
+  var voices = window.speechSynthesis.getVoices();
+  msg.voice = voices[2];
+  window.speechSynthesis.speak(msg);
+};
+
 const Table = ({ words }) => {
   return (
     <TableStyled>
       <thead>
         <tr>
-          {/* <th></th> */}
+          <FirstColumn>Learned</FirstColumn>
           <FirstColumn>Word</FirstColumn>
           <FirstColumn>Pronunciation</FirstColumn>
           <FirstColumn>Translate</FirstColumn>
@@ -42,11 +50,21 @@ const Table = ({ words }) => {
         </tr>
       </thead>
       <tbody>
-        {words.map((w, index) => (
+        {words?.map((w, index) => (
           <tr key={index}>
+            <TableColumn>
+              <input type="checkbox" disabled checked={w.isLearned} />
+            </TableColumn>
             <TableColumn>{w.word}</TableColumn>
-            <TableColumn>{w.pronunciation}</TableColumn>
-            <TableColumn>{w.translate}</TableColumn>
+            <TableColumn>
+              {w.pronunciation}{" "}
+              <IoVolumeHigh
+                onClick={() => listenToPronunciation(w.word)}
+                size="1.2rem"
+                style={{ cursor: "pointer" }}
+              />
+            </TableColumn>
+            <TableColumn>{w.translate.toLowerCase()}</TableColumn>
             <TableColumn>{w.definition}</TableColumn>
           </tr>
         ))}
