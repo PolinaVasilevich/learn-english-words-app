@@ -3,13 +3,13 @@ import { ThemeProvider } from "styled-components";
 import { BrowserRouter as Router } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { check } from "./http/userApi";
+import { check } from "../../http/userApi";
 import { ToastProvider } from "react-toast-notifications";
-import AppRouter from "./components/AppRouter";
-import { lightTheme, darkTheme, GlobalStyles } from "./themes";
-import AppHeader from "./components/appHeader/AppHeader";
-import { setIsAuth, setUser } from "./store/userSlice";
-import { Main } from "./components/Main";
+import AppRouter from "../AppRouter";
+import { lightTheme, darkTheme, GlobalStyles } from "../../themes";
+import AppHeader from "../appHeader/AppHeader";
+import { setIsAuth, setUser } from "../../store/userSlice";
+import { Main } from "../Main";
 
 const App = () => {
   const [theme, setTheme] = useState("light");
