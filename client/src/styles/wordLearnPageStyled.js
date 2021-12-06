@@ -31,6 +31,11 @@ export const Input = styled.input`
   border-radius: var(--radii);
   /* background-color: ${(props) => props.theme.baseColor}; */
   color: ${(props) => props.theme.textColor};
+
+  &:focus {
+    border: 1px solid var(--purple);
+    box-shadow: ${(props) => props.theme.shadow};
+  }
 `;
 
 export const ArrowButton = styled.button`

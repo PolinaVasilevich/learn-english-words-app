@@ -7,7 +7,7 @@ import { ArrowButton } from "../styles/wordLearnPageStyled";
 import { LEARN_WORD_ROUTE } from "../utils/consts";
 import { Button } from "../components/MainButton";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCurrentWordList } from "../store/wordSlice";
+import { addNewWord, fetchCurrentWordList } from "../store/wordSlice";
 import { Spinner } from "../components/spinner/Spinner";
 import { useToasts } from "react-toast-notifications";
 import { IoArrowBack } from "react-icons/io5";
@@ -44,9 +44,14 @@ const WordListPage = () => {
     toggleModal();
   };
 
+  const addWord = (word) => {
+    toggleModal();
+    dispatch(addNewWord({ id, word }));
+  };
+
   useEffect(() => {
     dispatch(fetchCurrentWordList(id));
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (error) {
@@ -76,7 +81,7 @@ const WordListPage = () => {
       )}
 
       <ModalComponent modal={modal} toggleModal={toggleModal}>
-        <AddWordForm />
+        <AddWordForm onSubmit={addWord} />
       </ModalComponent>
     </div>
   );

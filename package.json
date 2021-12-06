@@ -1,0 +1,24 @@
+{
+  "name": "learn-english-words-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run start",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PolinaVasilevich/learn-english-words-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PolinaVasilevich/learn-english-words-app/issues"
+  },
+  "homepage": "https://github.com/PolinaVasilevich/learn-english-words-app#readme",
+  "dependencies": {
+    "concurrently": "^6.4.0"
+  }
+}

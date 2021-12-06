@@ -126,6 +126,32 @@ export const learnWord = createAsyncThunk(
   }
 );
 
+export const addNewWord = createAsyncThunk(
+  "word/addNewWord",
+  async (data, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + `api/word/wordlist/${data.id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data.word),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error");
+      }
+
+      dispatch(wordAdded(data.word));
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 export const wordSlice = createSlice({
   name: "word",
   initialState,
@@ -140,6 +166,11 @@ export const wordSlice = createSlice({
 
     wordListDeleted: (state, action) => {
       state.words = state.words.filter((w) => w._id !== action.payload._id);
+    },
+
+    wordAdded: (state, action) => {
+      console.log(action.payload);
+      state.currentWordList.push(action.payload);
     },
   },
   extraReducers: {
@@ -202,4 +233,5 @@ export const wordSlice = createSlice({
 const { actions, reducer } = wordSlice;
 export default reducer;
 
-export const { setWords, wordListCreated, wordListDeleted } = actions;
+export const { setWords, wordListCreated, wordListDeleted, wordAdded } =
+  actions;

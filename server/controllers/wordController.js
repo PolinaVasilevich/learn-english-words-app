@@ -108,10 +108,28 @@ class wordController {
   async addWordInWordList(req, res) {
     try {
       const { id } = req.params;
+      const word = req.body;
 
       const wordList = await WordList.findOne({ id });
 
-      console.log(wordList);
+      if (!wordList) {
+        return res
+          .status(404)
+          .json({ message: `Wordlist with id ${id} doesn't exist` });
+      }
+
+      await WordList.findOneAndUpdate(
+        { _id: id },
+        {
+          $push: {
+            words: word,
+          },
+        }
+      );
+
+      res.json({
+        message: "Your new word has added in a wordlist",
+      });
     } catch (err) {
       res.status(500).json({ message: "Error for adding a new word" });
     }
