@@ -104,6 +104,18 @@ class wordController {
       res.status(500).json({ message: "Error update word list" });
     }
   }
+
+  async addWordInWordList(req, res) {
+    try {
+      const { id } = req.params;
+
+      const wordList = await WordList.findOne({ id });
+
+      console.log(wordList);
+    } catch (err) {
+      res.status(500).json({ message: "Error for adding a new word" });
+    }
+  }
 }
 
 module.exports = new wordController();

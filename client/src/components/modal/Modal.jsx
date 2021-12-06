@@ -39,18 +39,16 @@ const CloseButton = styled.button`
 `;
 
 const ModalComponent = ({ children, modal, toggleModal }) => {
-  return (
-    modal && (
-      <Wrapper>
-        <Modal>
-          <CloseButton onClick={toggleModal}>
-            <IoClose size="1.2rem" />
-          </CloseButton>
-          {children}
-        </Modal>
-      </Wrapper>
-    )
-  );
+  return modal ? (
+    <Wrapper>
+      <Modal>
+        <CloseButton onClick={toggleModal}>
+          <IoClose size="1.2rem" />
+        </CloseButton>
+        {children}
+      </Modal>
+    </Wrapper>
+  ) : null;
 };
 
 export default ModalComponent;

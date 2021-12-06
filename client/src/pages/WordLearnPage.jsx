@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useToasts } from "react-toast-notifications";
 
 import { Button } from "../components/MainButton";
+import { ArrowButton } from "../styles/wordLearnPageStyled";
 import { Spinner } from "../components/spinner/Spinner";
+
+import { IoArrowBack } from "react-icons/io5";
+
 import { fetchCurrentWordList, learnWord } from "../store/wordSlice";
 
 import { Card, CardBody, Input } from "../styles/wordLearnPageStyled";
@@ -32,6 +36,8 @@ const WordLearnPage = () => {
   const [randomWord, setRandomWord] = useState({});
 
   const { addToast } = useToasts();
+
+  const navigate = useNavigate();
 
   const getRandomWord = () => {
     if (currentWordList.words) {
@@ -81,6 +87,9 @@ const WordLearnPage = () => {
 
   return (
     <div>
+      <ArrowButton onClick={() => navigate(-1)}>
+        <IoArrowBack /> Back
+      </ArrowButton>
       <Card>
         {loading ? (
           <Spinner />

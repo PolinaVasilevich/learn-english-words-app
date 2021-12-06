@@ -26,8 +26,28 @@ export const Input = styled.input`
 
   border: 1px solid var(--grey);
   outline: none;
+  background: none;
 
   border-radius: var(--radii);
-  background-color: ${(props) => props.theme.baseColor};
+  /* background-color: ${(props) => props.theme.baseColor}; */
   color: ${(props) => props.theme.textColor};
+`;
+
+export const ArrowButton = styled.button`
+  padding: 0 1rem;
+  background-color: ${(props) => props.theme.baseColor};
+  box-shadow: ${(props) => props.theme.shadow};
+
+  line-height: 2.5;
+  border-radius: var(--radii);
+
+  color: ${(props) => props.theme.textColor};
+
+  outline: none;
+  border: none;
+
+  cursor: pointer;
+
+  position: absolute;
+  left: 2rem;
 `;

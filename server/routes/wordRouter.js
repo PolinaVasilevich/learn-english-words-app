@@ -8,6 +8,8 @@ router.get("/wordlists/:userid", wordController.getWordListsByUser);
 router.get("/wordlist/:id", wordController.getWordListById);
 
 router.post("/wordlist", wordController.addWordList);
+router.post("/wordlist/:id", wordController.addWordInWordList);
+
 router.delete("/wordlist/:id", wordController.deleteWordList);
 router.patch("/wordlist/:id", wordController.updateWordList);
 

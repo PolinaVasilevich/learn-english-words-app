@@ -1,17 +1,35 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 
 import Table from "../components/table/Table";
+import { ArrowButton } from "../styles/wordLearnPageStyled";
 import { LEARN_WORD_ROUTE } from "../utils/consts";
 import { Button } from "../components/MainButton";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCurrentWordList } from "../store/wordSlice";
 import { Spinner } from "../components/spinner/Spinner";
 import { useToasts } from "react-toast-notifications";
+import { IoArrowBack } from "react-icons/io5";
+import styled from "styled-components";
+import ModalComponent from "../components/modal/Modal";
+import AddWordForm from "../components/forms/AddWordForm";
+
+const AddButton = styled.button`
+  outline: none;
+  border: none;
+  background: none;
+
+  color: ${(props) => props.theme.textColor};
+`;
 
 const WordListPage = () => {
   const { id } = useParams();
+  const [modal, setModal] = useState(false);
+
+  const toggleModal = () => {
+    setModal(!modal);
+  };
   const dispatch = useDispatch();
 
   const { currentWordList, error, loading } = useSelector(
@@ -19,6 +37,12 @@ const WordListPage = () => {
   );
 
   const { addToast } = useToasts();
+
+  const navigate = useNavigate();
+
+  const openForm = () => {
+    toggleModal();
+  };
 
   useEffect(() => {
     dispatch(fetchCurrentWordList(id));
@@ -35,6 +59,10 @@ const WordListPage = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
+      <ArrowButton onClick={() => navigate(-1)}>
+        <IoArrowBack /> Back
+      </ArrowButton>
+      <AddButton onClick={openForm}>Add new word in list</AddButton>
       {loading ? (
         <Spinner />
       ) : (
@@ -46,6 +74,10 @@ const WordListPage = () => {
           <Table words={currentWordList.words} />
         </>
       )}
+
+      <ModalComponent modal={modal} toggleModal={toggleModal}>
+        <AddWordForm />
+      </ModalComponent>
     </div>
   );
 };
