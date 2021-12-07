@@ -1,60 +1,65 @@
-import React, { useState } from "react";
-import { Input } from "../../styles/wordLearnPageStyled";
+import React from "react";
+import { Input, ErrorMessage } from "../../styles/wordLearnPageStyled";
 import { Button } from "../MainButton";
 
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+
+const ValidationSchema = Yup.object().shape({
+  word: Yup.string().required("This field is required"),
+  pronunciation: Yup.string().required("This field is required"),
+  translate: Yup.string().required("This field is required"),
+  definition: Yup.string().required("This field is required"),
+});
+
 const AddWordForm = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
-    word: "",
-    pronunciation: "",
-    translate: "",
-    definition: "",
-  });
-
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const addWord = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  const fieldsForm = ["word", "pronunciation", "translate", "definition"];
 
   return (
-    <form>
+    <div>
       <h1>Add new word in this list</h1>
-      <div>
-        <Input
-          placeholder="Enter a word"
-          id="word"
-          autoFocus={true}
-          value={formData.word}
-          name="word"
-          onChange={(e) => onChange(e)}
-        />
-        <Input
-          placeholder="Enter a pronunciation"
-          id="pronunciation"
-          value={formData.pronunciation}
-          name="pronunciation"
-          onChange={(e) => onChange(e)}
-        />
-        <Input
-          placeholder="Enter a translate"
-          id="translate"
-          name="translate"
-          value={formData.translate}
-          onChange={(e) => onChange(e)}
-        />
-        <Input
-          placeholder="Enter a definition"
-          id="definition"
-          name="definition"
-          value={formData.definition}
-          onChange={(e) => onChange(e)}
-        />
-      </div>
-      <Button onClick={addWord}>Add word</Button>
-    </form>
+      <Formik
+        initialValues={{
+          word: "",
+          pronunciation: "",
+          translate: "",
+          definition: "",
+        }}
+        validationSchema={ValidationSchema}
+        onSubmit={(values) => {
+          onSubmit(values);
+        }}
+      >
+        {({
+          errors,
+          touched,
+          values,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+        }) => (
+          <Form onSubmit={handleSubmit}>
+            {fieldsForm?.map((field) => (
+              <div key={field}>
+                <Input
+                  name={field}
+                  placeholder={`Enter a ${field}`}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values[field]}
+                  error={errors[field] && touched[field]}
+                />
+                {errors[field] && touched[field] && (
+                  <ErrorMessage>{errors[field]}</ErrorMessage>
+                )}
+              </div>
+            ))}
+
+            <Button type="submit">Add word</Button>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };
 
