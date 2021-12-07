@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import XLSX from "xlsx";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,13 +14,9 @@ import { Button } from "../components/MainButton";
 import { Spinner } from "../components/spinner/Spinner.js";
 import { useToasts } from "react-toast-notifications";
 
-import {
-  Wrapper,
-  InputFileWrapper,
-  InputFile,
-  InputText,
-  UploadFileButton,
-} from "../styles/userPageStyled";
+import { Wrapper } from "../styles/userPageStyled";
+
+import AddWordList from "../components/forms/AddWordList";
 
 const UserPage = () => {
   const { words, error, loading } = useSelector((state) => state.word);
@@ -31,47 +26,8 @@ const UserPage = () => {
   const [modal, setModal] = useState(false);
   const toggleModal = () => setModal(!modal);
 
-  const [nameList, setNameList] = useState("");
-
   const dispatch = useDispatch();
   const { addToast } = useToasts();
-
-  const onUploadFile = (e) => {
-    const file = e.target.files ? e.target.files[0] : null;
-    const reader = new FileReader();
-
-    reader.onload = function async(e) {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-
-      const newWordList = {
-        name: nameList,
-        words: XLSX.utils.sheet_to_json(worksheet),
-        user,
-      };
-
-      dispatch(addWordList(newWordList));
-    };
-
-    reader.readAsArrayBuffer(file);
-
-    setNameList("");
-    setModal(false);
-
-    // if (!error) {
-    //   addToast("You have created new word list successfully", {
-    //     appearance: "success",
-    //     autoDismiss: true,
-    //   });
-    // } else {
-    //   addToast(error, {
-    //     appearance: "error",
-    //     autoDismiss: true,
-    //   });
-    // }
-  };
 
   const removeList = (id) => {
     dispatch(deleteWordList(id));
@@ -79,7 +35,7 @@ const UserPage = () => {
 
   useEffect(() => {
     dispatch(fetchWordLists(user.id));
-  }, []);
+  }, [dispatch, user.id]);
 
   useEffect(() => {
     if (error) {
@@ -88,7 +44,13 @@ const UserPage = () => {
         autoDismiss: true,
       });
     }
-  }, [error]);
+  }, [error, addToast]);
+
+  const onSubmit = (formData) => {
+    const newWordList = { ...formData, user };
+    dispatch(addWordList(newWordList));
+    setModal(false);
+  };
 
   // const errorMessage = error ? <p>{error}</p> : null;
   const spinner = loading ? <Spinner /> : null;
@@ -99,16 +61,7 @@ const UserPage = () => {
         <h1>Create your sets of words for learning</h1>
         <Button onClick={toggleModal}>Create new set of words</Button>
         <Modal modal={modal} toggleModal={toggleModal}>
-          <InputText
-            placeholder="Enter name of word list"
-            required
-            value={nameList}
-            onChange={(e) => setNameList(e.target.value)}
-          />
-          <InputFileWrapper>
-            <InputFile onChange={onUploadFile} />
-            <UploadFileButton>Choose file</UploadFileButton>
-          </InputFileWrapper>
+          <AddWordList onSubmit={onSubmit} />
         </Modal>
       </Wrapper>
 

@@ -16,8 +16,8 @@ const Wrapper = styled.div`
 
 const Modal = styled.div`
   min-height: 50px;
-  min-width: 400px;
-  padding: 1.5rem;
+  width: 500px;
+  padding: 1.2rem 3rem;
   margin: auto;
 
   background-color: ${(props) => props.theme.backgroudColor};

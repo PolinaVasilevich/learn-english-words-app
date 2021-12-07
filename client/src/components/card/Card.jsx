@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { IoClose, IoTrash } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
 const Wrapper = styled.div`

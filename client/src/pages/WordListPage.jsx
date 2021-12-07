@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 import Table from "../components/table/Table";
 import { ArrowButton } from "../styles/wordLearnPageStyled";
 import { LEARN_WORD_ROUTE } from "../utils/consts";
 import { Button } from "../components/MainButton";
-import { useSelector, useDispatch } from "react-redux";
+
 import { addNewWord, fetchCurrentWordList } from "../store/wordSlice";
 import { Spinner } from "../components/spinner/Spinner";
 import { useToasts } from "react-toast-notifications";
-import { IoArrowBack } from "react-icons/io5";
-import styled from "styled-components";
+
 import ModalComponent from "../components/modal/Modal";
 import AddWordForm from "../components/forms/AddWordForm";
+
+import { IoArrowBack } from "react-icons/io5";
+import styled from "styled-components";
 
 const AddButton = styled.button`
   outline: none;
   border: none;
   background: none;
+
+  display: block;
+  margin: 1.2rem auto;
 
   color: ${(props) => props.theme.textColor};
 `;
@@ -51,7 +57,7 @@ const WordListPage = () => {
 
   useEffect(() => {
     dispatch(fetchCurrentWordList(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (error) {
@@ -60,14 +66,14 @@ const WordListPage = () => {
         autoDismiss: true,
       });
     }
-  }, [error]);
+  }, [error, addToast]);
 
   return (
     <div style={{ textAlign: "center" }}>
       <ArrowButton onClick={() => navigate(-1)}>
         <IoArrowBack /> Back
       </ArrowButton>
-      <AddButton onClick={openForm}>Add new word in list</AddButton>
+
       {loading ? (
         <Spinner />
       ) : (
@@ -76,6 +82,7 @@ const WordListPage = () => {
           <Link to={LEARN_WORD_ROUTE + `/${id}`}>
             <Button>Learn this word list</Button>
           </Link>
+          <AddButton onClick={openForm}>Add new word in list</AddButton>
           <Table words={currentWordList.words} />
         </>
       )}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { LOGIN_ROUTE, USER_ROUTE } from "../utils/consts";
@@ -24,24 +24,20 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const isLogin = location.pathname === LOGIN_ROUTE;
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const dispatch = useDispatch();
 
   const { addToast } = useToasts();
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (formData) => {
     try {
       let data;
       if (isLogin) {
-        data = await login(email, password);
+        data = await login(formData);
 
         dispatch(setUser(data));
         navigate(USER_ROUTE);
       } else {
-        data = await registration(email, password);
+        data = await registration(formData);
         addToast("You have successfully registered", {
           appearance: "success",
           autoDismiss: true,
@@ -62,14 +58,7 @@ const AuthPage = () => {
 
   return (
     <Wrapper>
-      <AuthForm
-        isLogin={isLogin}
-        email={email}
-        setEmail={setEmail}
-        password={password}
-        setPassword={setPassword}
-        onSubmit={onSubmit}
-      />
+      <AuthForm isLogin={isLogin} onSubmit={onSubmit} />
     </Wrapper>
   );
 };

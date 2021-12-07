@@ -1,7 +1,10 @@
 import styled from "styled-components";
 
 export const Card = styled.div`
-  width: 100%;
+  width: 60vw;
+  min-width: 400px;
+  max-width: 800px;
+  margin: 0 auto;
 
   border-radius: var(--radii);
   background-color: ${(props) => props.theme.baseColor};
@@ -13,23 +16,24 @@ export const Card = styled.div`
 `;
 
 export const CardBody = styled.div`
-  padding: 2rem 0;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
 export const Input = styled.input`
-  margin: 1rem 0;
+  margin: 0.7rem;
   padding: 1rem 2rem;
-  width: 70%;
+  width: 100%;
 
-  border: 1px solid var(--grey);
+  border: 1px solid
+    ${(props) => (props.error ? `var(--darkred) ` : `var(--grey)`)};
   outline: none;
   background: none;
 
   border-radius: var(--radii);
-  /* background-color: ${(props) => props.theme.baseColor}; */
+
   color: ${(props) => props.theme.textColor};
 
   &:focus {
@@ -55,4 +59,10 @@ export const ArrowButton = styled.button`
 
   position: absolute;
   left: 2rem;
+`;
+
+export const ErrorMessage = styled.p`
+  color: var(--darkred);
+  /* font-weight: var(--fw-bold); */
+  font-size: var(--fs-md);
 `;

@@ -50,6 +50,7 @@ export const fetchCurrentWordList = createAsyncThunk(
 export const addWordList = createAsyncThunk(
   "word/addWordList",
   async function (newWordList, { rejectWithValue, dispatch }) {
+    console.log(newWordList);
     try {
       const response = await fetch(
         process.env.REACT_APP_API_URL + "api/word/wordlist",

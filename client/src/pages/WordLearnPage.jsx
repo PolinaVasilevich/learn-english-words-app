@@ -19,17 +19,17 @@ const WordLearnPage = () => {
 
   const dispatch = useDispatch();
 
-  const { currentWordList, error, loading } = useSelector(
-    (state) => state.word
-  );
+  const { currentWordList, loading } = useSelector((state) => state.word);
 
   useEffect(() => {
     dispatch(fetchCurrentWordList(id));
     getRandomWord();
-  }, []);
+    // eslint-disable-next-line
+  }, [dispatch, id]);
 
   useEffect(() => {
     getRandomWord();
+    // eslint-disable-next-line
   }, [currentWordList]);
 
   const [inputWord, setInputWord] = useState("");
