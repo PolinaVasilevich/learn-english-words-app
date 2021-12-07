@@ -47,4 +47,13 @@ export const LinkButton = styled.button`
 export const Navigation = styled.nav`
   display: flex;
   align-items: center;
+
+  & button,
+  a {
+    font-size: var(--fs-lg);
+  }
+
+  /* & .active {
+    color: var(--purple);
+  } */
 `;

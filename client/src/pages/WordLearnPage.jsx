@@ -95,7 +95,7 @@ const WordLearnPage = () => {
           <Spinner />
         ) : (
           <CardBody>
-            <h3>{randomWord.translate}</h3>
+            <h3>{randomWord.translate?.toLowerCase()}</h3>
             <p>{randomWord.definition}</p>
             <Button onClick={changeWord}>Change word</Button>
             <Input
