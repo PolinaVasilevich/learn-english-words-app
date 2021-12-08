@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/PolinaVasilevich/learn-english-words-app#readme",
   "dependencies": {
-    "concurrently": "^6.4.0"
+    "concurrently": "^6.4.0",
+    "react-select": "^5.2.1"
   }
 }

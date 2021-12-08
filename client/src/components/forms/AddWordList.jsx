@@ -29,7 +29,6 @@ const AddWordList = ({ onSubmit }) => {
     validationSchema,
     onSubmit: (values) => {
       onSubmit(values);
-      //   console.log(values);
     },
   });
 

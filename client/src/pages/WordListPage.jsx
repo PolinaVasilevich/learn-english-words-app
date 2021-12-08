@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,6 +17,7 @@ import AddWordForm from "../components/forms/AddWordForm";
 
 import { IoArrowBack } from "react-icons/io5";
 import styled from "styled-components";
+import { CustomSelect } from "../components/customSelect/CustomSelect";
 
 const AddButton = styled.button`
   outline: none;
@@ -46,6 +47,30 @@ const WordListPage = () => {
 
   const navigate = useNavigate();
 
+  const options = [
+    { value: "all", label: "All" },
+    { value: "learned", label: "Learned" },
+    { value: "new", label: "New" },
+  ];
+
+  const [filter, setFilter] = useState(() => {
+    const tableFilter = JSON.parse(localStorage.getItem("tableFilter"));
+    return tableFilter ? tableFilter : options[0];
+  });
+
+  const filteredWords = useMemo(() => {
+    if (currentWordList.words) {
+      switch (filter.value) {
+        case "learned":
+          return currentWordList.words.filter((w) => w.isLearned);
+        case "new":
+          return currentWordList.words.filter((w) => !w.isLearned);
+        default:
+          return [...currentWordList.words];
+      }
+    }
+  }, [filter, currentWordList]);
+
   const openForm = () => {
     toggleModal();
   };
@@ -68,6 +93,10 @@ const WordListPage = () => {
     }
   }, [error, addToast]);
 
+  useEffect(() => {
+    localStorage.setItem("tableFilter", JSON.stringify(filter));
+  }, [filter]);
+
   return (
     <div style={{ textAlign: "center" }}>
       <ArrowButton onClick={() => navigate(-1)}>
@@ -83,7 +112,15 @@ const WordListPage = () => {
             <Button>Learn this word list</Button>
           </Link>
           <AddButton onClick={openForm}>Add new word in list</AddButton>
-          <Table words={currentWordList.words} />
+
+          <CustomSelect
+            options={options}
+            classNamePrefix="react-select"
+            value={filter}
+            onChange={setFilter}
+          />
+          <Table words={filteredWords} />
+          <div id="observer"></div>
         </>
       )}
 

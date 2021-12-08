@@ -16,10 +16,11 @@ export const Header = styled.header`
 `;
 
 export const Wrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 2rem;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 `;
 
 export const ModeSwitcher = styled.div`
@@ -34,7 +35,6 @@ export const ModeSwitcher = styled.div`
 `;
 
 export const LinkButton = styled.button`
-  margin-left: 1rem;
   outline: none;
   border: none;
   background: none;
@@ -47,13 +47,5 @@ export const LinkButton = styled.button`
 export const Navigation = styled.nav`
   display: flex;
   align-items: center;
-
-  & button,
-  a {
-    font-size: var(--fs-lg);
-  }
-
-  /* & .active {
-    color: var(--purple);
-  } */
+  gap: 1rem;
 `;

@@ -12,10 +12,14 @@ import { setIsAuth, setUser } from "./store/userSlice";
 import { Main } from "./components/Main";
 
 const App = () => {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "light";
+  });
 
   const toggleTheme = () => {
-    theme === "light" ? setTheme("dark") : setTheme("light");
+    const themeApp = theme === "light" ? "dark" : "light";
+    setTheme(themeApp);
+    localStorage.setItem("theme", themeApp);
   };
 
   const dispatch = useDispatch();

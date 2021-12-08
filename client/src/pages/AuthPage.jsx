@@ -52,7 +52,6 @@ const AuthPage = () => {
         appearance: "error",
         autoDismiss: true,
       });
-      console.log(e.response.data.message);
     }
   };
 

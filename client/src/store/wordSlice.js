@@ -50,7 +50,6 @@ export const fetchCurrentWordList = createAsyncThunk(
 export const addWordList = createAsyncThunk(
   "word/addWordList",
   async function (newWordList, { rejectWithValue, dispatch }) {
-    console.log(newWordList);
     try {
       const response = await fetch(
         process.env.REACT_APP_API_URL + "api/word/wordlist",
@@ -100,7 +99,7 @@ export const deleteWordList = createAsyncThunk(
 
 export const learnWord = createAsyncThunk(
   "word/learnWord",
-  async (data, { rejectWithValue }) => {
+  async (data, { rejectWithValue, dispatch }) => {
     try {
       const response = await fetch(
         process.env.REACT_APP_API_URL + `api/word/wordlist/${data.wordlistid}`,
@@ -119,7 +118,7 @@ export const learnWord = createAsyncThunk(
         throw new Error("Can't update this word. Server error.");
       }
 
-      console.log(response);
+      dispatch(wordLearned({ id: data.wordid }));
     } catch (error) {
       console.log(error);
       return rejectWithValue(error.message);
@@ -170,8 +169,15 @@ export const wordSlice = createSlice({
     },
 
     wordAdded: (state, action) => {
-      console.log(action.payload);
-      state.currentWordList.push(action.payload);
+      state.currentWordList.words.push(action.payload);
+    },
+
+    wordLearned: (state, action) => {
+      const learnedWord = state.currentWordList.words.find(
+        (el) => el._id === action.payload.id
+      );
+
+      learnedWord.isLearned = true;
     },
   },
   extraReducers: {
@@ -234,5 +240,10 @@ export const wordSlice = createSlice({
 const { actions, reducer } = wordSlice;
 export default reducer;
 
-export const { setWords, wordListCreated, wordListDeleted, wordAdded } =
-  actions;
+export const {
+  setWords,
+  wordListCreated,
+  wordListDeleted,
+  wordAdded,
+  wordLearned,
+} = actions;

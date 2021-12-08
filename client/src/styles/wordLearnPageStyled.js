@@ -59,6 +59,9 @@ export const ArrowButton = styled.button`
 
   position: absolute;
   left: 2rem;
+
+  display: flex;
+  align-items: center;
 `;
 
 export const ErrorMessage = styled.p`

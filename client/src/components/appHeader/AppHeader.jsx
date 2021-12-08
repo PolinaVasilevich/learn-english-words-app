@@ -39,11 +39,11 @@ const AppHeader = ({ theme, toggleTheme }) => {
           ) : (
             <NavLink to={LOGIN_ROUTE}>Sign in</NavLink>
           )}
+          <ModeSwitcher onClick={toggleTheme}>
+            {theme === "light" ? <IoSunny /> : <IoMoon />}
+            <span style={{ marginLeft: "0.4rem" }}>{theme} Theme</span>
+          </ModeSwitcher>
         </Navigation>
-        <ModeSwitcher onClick={toggleTheme}>
-          {theme === "light" ? <IoSunny /> : <IoMoon />}
-          <span style={{ marginLeft: "0.4rem" }}>{theme} Theme</span>
-        </ModeSwitcher>
       </Wrapper>
     </Header>
   );

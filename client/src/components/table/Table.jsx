@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { IoVolumeHigh } from "react-icons/io5";
+import { listenToPronunciation } from "../../utils/listenToPron";
 
 const TableStyled = styled.table`
   margin: 30px auto;
@@ -28,21 +29,22 @@ const FirstColumn = styled.th`
 
   font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
+
+  & .icon {
+    cursor: pointer;
+  }
 `;
 
-const listenToPronunciation = (message) => {
-  var msg = new SpeechSynthesisUtterance(message);
-  var voices = window.speechSynthesis.getVoices();
-  msg.voice = voices[2];
-  window.speechSynthesis.speak(msg);
-};
+const Text = styled.p`
+  font-size: var(--var-lg);
+  margin-top: 2rem;
+`;
 
 const Table = ({ words }) => {
-  return (
+  return words?.length ? (
     <TableStyled>
       <thead>
         <tr>
-          <FirstColumn>Learned</FirstColumn>
           <FirstColumn>Word</FirstColumn>
           <FirstColumn>Pronunciation</FirstColumn>
           <FirstColumn>Translate</FirstColumn>
@@ -52,9 +54,6 @@ const Table = ({ words }) => {
       <tbody>
         {words?.map((w, index) => (
           <tr key={index}>
-            <TableColumn>
-              <input type="checkbox" disabled checked={w.isLearned} />
-            </TableColumn>
             <TableColumn>{w.word}</TableColumn>
             <TableColumn>
               {w.pronunciation}{" "}
@@ -70,6 +69,8 @@ const Table = ({ words }) => {
         ))}
       </tbody>
     </TableStyled>
+  ) : (
+    <Text>There aren't words with this filter</Text>
   );
 };
 
