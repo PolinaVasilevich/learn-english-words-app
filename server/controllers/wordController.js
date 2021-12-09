@@ -24,6 +24,7 @@ class wordController {
   async getWordListById(req, res) {
     try {
       const { id } = req.params;
+
       const wordList = await WordList.findOne({ _id: id });
 
       res.json(wordList);

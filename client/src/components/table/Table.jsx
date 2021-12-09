@@ -4,9 +4,9 @@ import { IoVolumeHigh } from "react-icons/io5";
 import { listenToPronunciation } from "../../utils/listenToPron";
 
 const TableStyled = styled.table`
-  margin: 30px auto;
+  margin: 20px 0;
   table-layout: fixed;
-  width: 70vw;
+  width: 100%;
   max-width: 1240px;
   border-collapse: collapse;
   border: 1px solid var(--grey);

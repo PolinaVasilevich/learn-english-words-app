@@ -18,20 +18,38 @@ import AddWordForm from "../components/forms/AddWordForm";
 import { IoArrowBack } from "react-icons/io5";
 import styled from "styled-components";
 import { CustomSelect } from "../components/customSelect/CustomSelect";
+import Pagination from "../components/pagination/Pagination";
 
 const AddButton = styled.button`
+  padding: 6px 15px;
   outline: none;
-  border: none;
+  border: 1px solid var(--grey);
+  border-radius: 4px;
   background: none;
 
   display: block;
-  margin: 1.2rem auto;
 
   color: ${(props) => props.theme.textColor};
 `;
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+`;
+
+const Controls = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
 const WordListPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
@@ -45,17 +63,21 @@ const WordListPage = () => {
 
   const { addToast } = useToasts();
 
-  const navigate = useNavigate();
-
   const options = [
     { value: "all", label: "All" },
     { value: "learned", label: "Learned" },
     { value: "new", label: "New" },
   ];
 
+  const [activeFilters, setActiveFilters] = useState(() => {
+    const activeFilters = localStorage.getItem("selectedFilters");
+
+    return activeFilters ? JSON.parse(activeFilters) : [];
+  });
+
   const [filter, setFilter] = useState(() => {
-    const tableFilter = JSON.parse(localStorage.getItem("tableFilter"));
-    return tableFilter ? tableFilter : options[0];
+    const filters = activeFilters?.filter((f) => f.id === id);
+    return filters.length ? filters[0]["filter"] : options[0];
   });
 
   const filteredWords = useMemo(() => {
@@ -94,11 +116,33 @@ const WordListPage = () => {
   }, [error, addToast]);
 
   useEffect(() => {
-    localStorage.setItem("tableFilter", JSON.stringify(filter));
+    const filters = activeFilters.filter((f) => f.id !== id);
+    localStorage.setItem(
+      "selectedFilters",
+      JSON.stringify([...filters, { id, filter }])
+    );
+
+    localStorage.removeItem("currentPage");
   }, [filter]);
 
+  const [currentPage, setCurrentPage] = useState(() => {
+    const currentPage = localStorage.getItem("currentPage");
+    return currentPage ? +currentPage : 1;
+  });
+
+  const [wordsPerPage] = useState(10);
+
+  const lastWordIndex = currentPage * wordsPerPage;
+  const firstWordIndex = lastWordIndex - wordsPerPage;
+  const currentWord = filteredWords?.slice(firstWordIndex, lastWordIndex);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    localStorage.setItem("currentPage", +pageNumber);
+  };
+
   return (
-    <div style={{ textAlign: "center" }}>
+    <Wrapper>
       <ArrowButton onClick={() => navigate(-1)}>
         <IoArrowBack /> Back
       </ArrowButton>
@@ -107,27 +151,39 @@ const WordListPage = () => {
         <Spinner />
       ) : (
         <>
-          <h1>{currentWordList.name}</h1>
-          <Link to={LEARN_WORD_ROUTE + `/${id}`}>
-            <Button>Learn this word list</Button>
-          </Link>
-          <AddButton onClick={openForm}>Add new word in list</AddButton>
+          <div>
+            <h1>{currentWordList.name}</h1>
+            <Link to={LEARN_WORD_ROUTE + `/${id}`}>
+              <Button>Learn this word list</Button>
+            </Link>
+          </div>
+          <Controls>
+            <AddButton onClick={openForm}>Add new word in list</AddButton>
+            <CustomSelect
+              options={options}
+              classNamePrefix="react-select"
+              value={filter}
+              onChange={setFilter}
+            />
+          </Controls>
 
-          <CustomSelect
-            options={options}
-            classNamePrefix="react-select"
-            value={filter}
-            onChange={setFilter}
-          />
-          <Table words={filteredWords} />
-          <div id="observer"></div>
+          <Table words={currentWord} />
+          {filteredWords.length ? (
+            <Pagination
+              wordsPerPage={wordsPerPage}
+              totalWords={filteredWords?.length}
+              paginate={paginate}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+            />
+          ) : null}
         </>
       )}
 
       <ModalComponent modal={modal} toggleModal={toggleModal}>
         <AddWordForm onSubmit={addWord} />
       </ModalComponent>
-    </div>
+    </Wrapper>
   );
 };
 
