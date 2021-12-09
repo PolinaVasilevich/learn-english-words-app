@@ -102,6 +102,16 @@ const WordListPage = () => {
     dispatch(addNewWord({ id, word }));
   };
 
+  const [currentPage, setCurrentPage] = useState(
+    1
+    //   () => {
+    //   const filters = activeFilters?.filter((f) => f.id === id);
+
+    //   const currentPage = filters[0]["currentPage"];
+    //   return currentPage ? +currentPage : 1;
+    // }
+  );
+
   useEffect(() => {
     dispatch(fetchCurrentWordList(id));
   }, [dispatch, id]);
@@ -119,18 +129,11 @@ const WordListPage = () => {
     const filters = activeFilters.filter((f) => f.id !== id);
     localStorage.setItem(
       "selectedFilters",
-      JSON.stringify([...filters, { id, filter }])
+      JSON.stringify([...filters, { id, filter, currentPage }])
     );
 
     setCurrentPage(1);
-
-    localStorage.removeItem("currentPage");
   }, [filter]);
-
-  const [currentPage, setCurrentPage] = useState(() => {
-    const currentPage = localStorage.getItem("currentPage");
-    return currentPage ? +currentPage : 1;
-  });
 
   const [wordsPerPage] = useState(10);
 
