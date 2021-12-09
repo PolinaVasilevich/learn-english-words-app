@@ -122,6 +122,8 @@ const WordListPage = () => {
       JSON.stringify([...filters, { id, filter }])
     );
 
+    setCurrentPage(1);
+
     localStorage.removeItem("currentPage");
   }, [filter]);
 
