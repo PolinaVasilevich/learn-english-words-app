@@ -58,7 +58,7 @@ const WordLearnPage = () => {
 
       setInputWord("");
 
-      getRandomWord();
+      // getRandomWord();
     } else {
       addToast("You're wrong. Try again!", {
         appearance: "error",
@@ -86,7 +86,7 @@ const WordLearnPage = () => {
 
   useEffect(() => {
     dispatch(fetchCurrentWordList(id));
-    getRandomWord();
+    // getRandomWord();
 
     // eslint-disable-next-line
   }, [dispatch, id]);
