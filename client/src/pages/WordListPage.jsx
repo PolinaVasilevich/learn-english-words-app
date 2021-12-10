@@ -173,7 +173,7 @@ const WordListPage = () => {
           </Controls>
 
           <Table words={currentWord} />
-          {filteredWords.length ? (
+          {filteredWords?.length ? (
             <Pagination
               wordsPerPage={wordsPerPage}
               totalWords={filteredWords?.length}
