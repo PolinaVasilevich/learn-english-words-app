@@ -25,6 +25,12 @@ const WordLearnPage = () => {
 
   const { addToast } = useToasts();
 
+  const showMessage = (type, message) =>
+    addToast(message, {
+      appearance: type,
+      autoDismiss: true,
+    });
+
   const navigate = useNavigate();
 
   const { currentWordList, loading, error } = useSelector(
@@ -47,32 +53,18 @@ const WordLearnPage = () => {
 
   const checkWord = () => {
     if (randomWord.word.toLowerCase() === inputWord.toLowerCase()) {
-      addToast("You're right", {
-        appearance: "success",
-        autoDismiss: true,
-      });
-
       if (!randomWord.isLearned) {
         dispatch(learnWord({ wordlistid: id, wordid: randomWord._id }));
       }
-
+      showMessage("You're right", "success");
       setInputWord("");
-
-      // getRandomWord();
     } else {
-      addToast("You're wrong. Try again!", {
-        appearance: "error",
-        autoDismiss: true,
-      });
+      showMessage("You're wrong. Try again!", "error");
     }
   };
 
   const changeWord = () => {
-    addToast(`${randomWord.word.toUpperCase()} is right word`, {
-      appearance: "info",
-      autoDismiss: true,
-    });
-
+    showMessage(`${randomWord.word.toUpperCase()} is right word`, "info");
     listenToPronunciation(randomWord.word);
     setInputWord("");
     getRandomWord();
@@ -86,8 +78,6 @@ const WordLearnPage = () => {
 
   useEffect(() => {
     dispatch(fetchCurrentWordList(id));
-    // getRandomWord();
-
     // eslint-disable-next-line
   }, [dispatch, id]);
 

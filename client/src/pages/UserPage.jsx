@@ -1,59 +1,74 @@
 import React, { useEffect, useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchWordLists,
-  addWordList,
-  deleteWordList,
-} from "../store/wordSlice";
+import { useSelector } from "react-redux";
 
+import { useToasts } from "react-toast-notifications";
+
+import {
+  useGetWordListsByUserIdQuery,
+  useCreateWordListMutation,
+  useDeleteWordListMutation,
+} from "../api/apiSlice";
+
+import AddWordList from "../components/forms/AddWordList";
+import WordLists from "../components/wordsList/WordLists";
 import Modal from "../components/modal/Modal";
-import List from "../components/List";
-import Card from "../components/card/Card";
 import { Button } from "../components/MainButton";
 import { Spinner } from "../components/spinner/Spinner.js";
-import { useToasts } from "react-toast-notifications";
 
 import { Wrapper } from "../styles/userPageStyled";
 
-import AddWordList from "../components/forms/AddWordList";
-
 const UserPage = () => {
-  const { words, error, loading } = useSelector((state) => state.word);
+  const { addToast } = useToasts();
 
   const user = useSelector((state) => state.user.user);
+
+  const {
+    data: wordlists,
+    isLoading,
+    isError,
+  } = useGetWordListsByUserIdQuery(user.id);
+
+  const [createWordlist, { isLoading: isLoadingCreate, error: createError }] =
+    useCreateWordListMutation();
+
+  const [deleteWordlist, { isLoading: isLoadingDelete, error: deleteError }] =
+    useDeleteWordListMutation();
 
   const [modal, setModal] = useState(false);
   const toggleModal = () => setModal(!modal);
 
-  const dispatch = useDispatch();
-  const { addToast } = useToasts();
-
   const removeList = (id) => {
-    dispatch(deleteWordList(id));
+    deleteWordlist(id).unwrap();
+  };
+
+  const showErrorMessage = (msg) => {
+    addToast(msg, {
+      appearance: "error",
+      autoDismiss: true,
+    });
   };
 
   useEffect(() => {
-    dispatch(fetchWordLists(user.id));
-  }, [dispatch, user.id]);
+    if (createError) showErrorMessage(createError.data.message);
+  }, [createError]);
 
   useEffect(() => {
-    if (error) {
-      addToast(error, {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    }
-  }, [error, addToast]);
+    if (deleteError) showErrorMessage(deleteError.data.message);
+  }, [deleteError]);
 
   const onSubmit = (formData) => {
     const newWordList = { ...formData, user };
-    dispatch(addWordList(newWordList));
+    createWordlist(newWordList).unwrap();
     setModal(false);
   };
 
-  // const errorMessage = error ? <p>{error}</p> : null;
-  const spinner = loading ? <Spinner /> : null;
+  const errorMessage = isError ? <h5>Loading error</h5> : null;
+  const spinner =
+    isLoading || isLoadingCreate || isLoadingDelete ? <Spinner /> : null;
+  const content = !isLoading && !isError && (
+    <WordLists wordlists={wordlists} deleteList={removeList} />
+  );
 
   return (
     <div>
@@ -64,23 +79,9 @@ const UserPage = () => {
           <AddWordList onSubmit={onSubmit} />
         </Modal>
       </Wrapper>
-
-      {/* {errorMessage} */}
+      {errorMessage}
       {spinner}
-
-      {words.length && !loading ? (
-        <List>
-          {words?.map(({ _id, name, words }) => (
-            <Card
-              key={name}
-              id={_id}
-              name={name}
-              legthList={words?.length}
-              deleteList={removeList}
-            />
-          ))}
-        </List>
-      ) : null}
+      {content}
     </div>
   );
 };

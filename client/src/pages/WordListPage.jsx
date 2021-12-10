@@ -3,12 +3,14 @@ import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
+import { useGetWordsByListIdQuery } from "../api/apiSlice";
+
 import Table from "../components/table/Table";
 import { ArrowButton } from "../styles/wordLearnPageStyled";
 import { LEARN_WORD_ROUTE } from "../utils/consts";
 import { Button } from "../components/MainButton";
 
-import { addNewWord, fetchCurrentWordList } from "../store/wordSlice";
+import { addNewWord } from "../store/wordSlice";
 import { Spinner } from "../components/spinner/Spinner";
 import { useToasts } from "react-toast-notifications";
 
@@ -50,18 +52,30 @@ const Controls = styled.div`
 const WordListPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [modal, setModal] = useState(false);
 
+  const { data: wordlist, isLoading, error } = useGetWordsByListIdQuery(id);
+
+  ////modal
+  const [modal, setModal] = useState(false);
   const toggleModal = () => {
     setModal(!modal);
   };
+  ///
+
+  ///filters
+
   const dispatch = useDispatch();
 
-  const { currentWordList, error, loading } = useSelector(
-    (state) => state.word
-  );
+  const filters = useMemo(() => {
+    return JSON.parse(localStorage.getItem("selectedFilters")) || [];
+  }, []);
 
-  const { addToast } = useToasts();
+  const activeFilters = useMemo(() => {
+    if (filters.length) {
+      return filters.filter((f) => f.id === id);
+    }
+    return [];
+  }, [filters]);
 
   const options = [
     { value: "all", label: "All" },
@@ -69,29 +83,54 @@ const WordListPage = () => {
     { value: "new", label: "New" },
   ];
 
-  const [activeFilters, setActiveFilters] = useState(() => {
-    const activeFilters = localStorage.getItem("selectedFilters");
-
-    return activeFilters ? JSON.parse(activeFilters) : [];
-  });
-
   const [filter, setFilter] = useState(() => {
-    const filters = activeFilters?.filter((f) => f.id === id);
-    return filters.length ? filters[0]["filter"] : options[0];
+    return activeFilters.length ? activeFilters[0].filter : options[0];
   });
 
   const filteredWords = useMemo(() => {
-    if (currentWordList.words) {
+    if (wordlist?.words) {
+      const { words } = wordlist;
       switch (filter.value) {
         case "learned":
-          return currentWordList.words.filter((w) => w.isLearned);
+          return words.filter((w) => w.isLearned);
         case "new":
-          return currentWordList.words.filter((w) => !w.isLearned);
+          return words.filter((w) => !w.isLearned);
         default:
-          return [...currentWordList.words];
+          return [...words];
       }
     }
-  }, [filter, currentWordList]);
+  }, [filter, wordlist]);
+
+  useEffect(() => {
+    const allFilters = filters.filter((f) => f.id !== id);
+
+    localStorage.setItem(
+      "selectedFilters",
+      JSON.stringify([...allFilters, { id, filter }])
+    );
+
+    setCurrentPage(1);
+  }, [filter]);
+
+  ////filters
+
+  ///pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [wordsPerPage] = useState(10);
+
+  const lastWordIndex = currentPage * wordsPerPage;
+  const firstWordIndex = lastWordIndex - wordsPerPage;
+
+  const words = useMemo(() => {
+    return filteredWords?.slice(firstWordIndex, lastWordIndex);
+  }, [filteredWords, firstWordIndex, lastWordIndex]);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    localStorage.setItem("currentPage", +pageNumber);
+  };
+
+  ///pagination
 
   const openForm = () => {
     toggleModal();
@@ -102,19 +141,7 @@ const WordListPage = () => {
     dispatch(addNewWord({ id, word }));
   };
 
-  const [currentPage, setCurrentPage] = useState(
-    1
-    //   () => {
-    //   const filters = activeFilters?.filter((f) => f.id === id);
-
-    //   const currentPage = filters[0]["currentPage"];
-    //   return currentPage ? +currentPage : 1;
-    // }
-  );
-
-  useEffect(() => {
-    dispatch(fetchCurrentWordList(id));
-  }, [dispatch, id]);
+  const { addToast } = useToasts();
 
   useEffect(() => {
     if (error) {
@@ -125,65 +152,50 @@ const WordListPage = () => {
     }
   }, [error, addToast]);
 
-  useEffect(() => {
-    const filters = activeFilters.filter((f) => f.id !== id);
-    localStorage.setItem(
-      "selectedFilters",
-      JSON.stringify([...filters, { id, filter, currentPage }])
+  const loading = isLoading ? <Spinner /> : null;
+
+  const renderContent = (wordlist) => {
+    return (
+      <div>
+        <div>
+          <h1>{wordlist.name}</h1>
+          <Link to={LEARN_WORD_ROUTE + `/${id}`}>
+            <Button>Learn this word list</Button>
+          </Link>
+        </div>
+        <Controls>
+          <AddButton onClick={openForm}>Add new word in list</AddButton>
+          <CustomSelect
+            options={options}
+            classNamePrefix="react-select"
+            value={filter}
+            onChange={setFilter}
+          />
+        </Controls>
+
+        <Table words={words} />
+        {words.length && (
+          <Pagination
+            wordsPerPage={wordsPerPage}
+            totalWords={wordlist.words.length}
+            paginate={paginate}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
+      </div>
     );
-
-    setCurrentPage(1);
-  }, [filter]);
-
-  const [wordsPerPage] = useState(10);
-
-  const lastWordIndex = currentPage * wordsPerPage;
-  const firstWordIndex = lastWordIndex - wordsPerPage;
-  const currentWord = filteredWords?.slice(firstWordIndex, lastWordIndex);
-
-  const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    localStorage.setItem("currentPage", +pageNumber);
   };
+
+  const elements = !isLoading && !error && renderContent(wordlist);
 
   return (
     <Wrapper>
       <ArrowButton onClick={() => navigate(-1)}>
         <IoArrowBack /> Back
       </ArrowButton>
-
-      {loading ? (
-        <Spinner />
-      ) : (
-        <>
-          <div>
-            <h1>{currentWordList.name}</h1>
-            <Link to={LEARN_WORD_ROUTE + `/${id}`}>
-              <Button>Learn this word list</Button>
-            </Link>
-          </div>
-          <Controls>
-            <AddButton onClick={openForm}>Add new word in list</AddButton>
-            <CustomSelect
-              options={options}
-              classNamePrefix="react-select"
-              value={filter}
-              onChange={setFilter}
-            />
-          </Controls>
-
-          <Table words={currentWord} />
-          {filteredWords?.length ? (
-            <Pagination
-              wordsPerPage={wordsPerPage}
-              totalWords={filteredWords?.length}
-              paginate={paginate}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-          ) : null}
-        </>
-      )}
+      {loading}
+      {elements}
 
       <ModalComponent modal={modal} toggleModal={toggleModal}>
         <AddWordForm onSubmit={addWord} />
