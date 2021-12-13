@@ -6,7 +6,7 @@ const cors = require("cors");
 const router = require("./routes/index");
 const errorHandler = require("./middleware/ErrorHandlingMiddleware");
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || "5000";
 
 const app = express();
 app.use(cors());
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 
 const start = async () => {
   try {
-    await mongoose.connect(process.env.DB_URI, {
+    await mongoose.connect(process.env.MONGODB_CONNECTION_STRING, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     });
