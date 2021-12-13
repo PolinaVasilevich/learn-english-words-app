@@ -56,7 +56,7 @@ class wordController {
         user: user.id,
       });
 
-      newWordList.save();
+      await newWordList.save();
 
       res
         .status(201)

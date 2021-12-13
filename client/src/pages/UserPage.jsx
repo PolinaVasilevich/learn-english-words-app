@@ -66,7 +66,7 @@ const UserPage = () => {
   const errorMessage = isError ? <h5>Loading error</h5> : null;
   const spinner =
     isLoading || isLoadingCreate || isLoadingDelete ? <Spinner /> : null;
-  const content = !isLoading && !isError && (
+  const wordLists = !isLoading && !isError && (
     <WordLists wordlists={wordlists} deleteList={removeList} />
   );
 
@@ -81,7 +81,7 @@ const UserPage = () => {
       </Wrapper>
       {errorMessage}
       {spinner}
-      {content}
+      {wordLists}
     </div>
   );
 };

@@ -9,6 +9,7 @@ export const apiSlice = createApi({
       query: (userid) => `api/word/wordlists/${userid}`,
       providesTags: ["Wordlists"],
     }),
+
     getWordsByListId: builder.query({
       query: (id) => `api/word/wordlist/${id}`,
       providesTags: ["Words"],
@@ -30,6 +31,15 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Wordlists"],
     }),
+
+    learnWord: builder.mutation({
+      query: ({ id, wordid }) => ({
+        url: `api/word/wordlist/${id}`,
+        method: "PATCH",
+        body: wordid,
+      }),
+      invalidatesTags: ["Words"],
+    }),
   }),
 });
 
@@ -38,4 +48,5 @@ export const {
   useGetWordsByListIdQuery,
   useCreateWordListMutation,
   useDeleteWordListMutation,
+  useLearnWordMutation,
 } = apiSlice;
