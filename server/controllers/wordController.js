@@ -24,9 +24,7 @@ class wordController {
   async getWordListById(req, res) {
     try {
       const { id } = req.params;
-
       const wordList = await WordList.findOne({ _id: id });
-
       res.json(wordList);
     } catch (e) {
       res.status(500).json({ message: "Error! Try again" });
@@ -58,7 +56,7 @@ class wordController {
         user: user.id,
       });
 
-      newWordList.save();
+      await newWordList.save();
 
       res
         .status(201)

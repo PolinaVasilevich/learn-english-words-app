@@ -57,15 +57,10 @@ const Pagination = ({
   setCurrentPage,
 }) => {
   const pageNumbers = [];
-  const limitpageNumbers = 3;
 
-  for (let i = 1; i <= Math.floor(totalWords / wordsPerPage); i++) {
+  for (let i = 1; i <= Math.ceil(totalWords / wordsPerPage); i++) {
     pageNumbers.push(i);
   }
-
-  //   for (let i = 1; i <= currentPage + limitpageNumbers; i++) {
-  //     pageNumbers.push(i);
-  //   }
 
   const prevPage = () => {
     if (currentPage > 1) {

@@ -1,10 +1,8 @@
-import React from "react";
 import Select from "react-select";
 import styled from "styled-components";
 
 export const CustomSelect = styled(Select).attrs({})`
   width: 150px;
-  /* margin: 0 auto; */
   border-radius: var(--radii);
   font-family: var(--family);
   border: none;

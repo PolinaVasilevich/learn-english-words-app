@@ -1,4 +1,3 @@
-import AdminPage from "./pages/AdminPage";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
@@ -6,7 +5,6 @@ import WordLearnPage from "./pages/WordLearnPage";
 import WordListPage from "./pages/WordListPage";
 
 import {
-  ADMIN_ROUTE,
   HOME_ROUTE,
   LEARN_WORD_ROUTE,
   LOGIN_ROUTE,
@@ -17,8 +15,8 @@ import {
 
 export const authRoutes = [
   {
-    path: ADMIN_ROUTE,
-    element: <AdminPage />,
+    path: HOME_ROUTE,
+    element: <UserPage />,
   },
 
   {

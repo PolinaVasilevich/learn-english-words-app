@@ -1,131 +1,89 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
-import { useParams, useNavigate } from "react-router";
+import {
+  useGetWordsByListIdQuery,
+  useLearnWordMutation,
+} from "../api/apiSlice";
+
+import { useParams } from "react-router";
 import { useToasts } from "react-toast-notifications";
 
-import { Button } from "../components/MainButton";
-import { ArrowButton } from "../styles/wordLearnPageStyled";
 import { Spinner } from "../components/spinner/Spinner";
+import { ErrorMessage } from "../styles/wordLearnPageStyled";
 
-import { IoArrowBack } from "react-icons/io5";
-
-import { fetchCurrentWordList, learnWord } from "../store/wordSlice";
-
-import { Card, CardBody, Input } from "../styles/wordLearnPageStyled";
 import { listenToPronunciation } from "../utils/listenToPron";
 
+import CardWord from "../components/cardWord/CardWord";
+import ArrowBack from "../components/arrowBack/ArrowBack";
+
 const WordLearnPage = () => {
-  const { id } = useParams();
-
-  const dispatch = useDispatch();
-
-  const [inputWord, setInputWord] = useState("");
-  const [randomWord, setRandomWord] = useState({});
-
   const { addToast } = useToasts();
 
-  const navigate = useNavigate();
-
-  const { currentWordList, loading, error } = useSelector(
-    (state) => state.word
-  );
-
-  const filteredWords = useMemo(() => {
-    return currentWordList.words
-      ? currentWordList.words.filter((w) => !w.isLearned)
-      : [];
-  }, [currentWordList.words]);
-
-  const getRandomWord = () => {
-    if (currentWordList.words) {
-      const randomId = Math.floor(Math.random() * filteredWords?.length);
-
-      setRandomWord(filteredWords[randomId]);
-    }
-  };
-
-  const checkWord = () => {
-    if (randomWord.word.toLowerCase() === inputWord.toLowerCase()) {
-      addToast("You're right", {
-        appearance: "success",
-        autoDismiss: true,
-      });
-
-      if (!randomWord.isLearned) {
-        dispatch(learnWord({ wordlistid: id, wordid: randomWord._id }));
-      }
-
-      setInputWord("");
-
-      // getRandomWord();
-    } else {
-      addToast("You're wrong. Try again!", {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    }
-  };
-
-  const changeWord = () => {
-    addToast(`${randomWord.word.toUpperCase()} is right word`, {
-      appearance: "info",
+  const showMessage = (type, message) =>
+    addToast(message, {
+      appearance: type,
       autoDismiss: true,
     });
 
+  const { id } = useParams();
+
+  const { data: wordlist, isLoading, error } = useGetWordsByListIdQuery(id);
+  const [learnWord, { isLoading: isLoadingMutation, error: errorMutation }] =
+    useLearnWordMutation(id);
+
+  const filteredWords = useMemo(() => {
+    return wordlist ? wordlist.words.filter((w) => !w.isLearned) : [];
+  }, [wordlist]);
+
+  const [randomIndex, setRandomIndex] = useState(0);
+
+  const getRandomIndex = () => {
+    const randomIndex = Math.floor(Math.random() * filteredWords?.length);
+    setRandomIndex(randomIndex);
+  };
+
+  useEffect(() => {
+    getRandomIndex();
+  }, []);
+
+  const randomWord = useMemo(() => {
+    return filteredWords[randomIndex];
+  }, [filteredWords, randomIndex]);
+
+  const changeIsLearnedWord = (wordid) => {
+    learnWord({ id, wordid });
+  };
+
+  const changeWord = () => {
+    showMessage("info", `${randomWord.word.toUpperCase()} is right word`);
     listenToPronunciation(randomWord.word);
-    setInputWord("");
-    getRandomWord();
+    getRandomIndex();
   };
 
-  const onHandlerEnter = (e) => {
-    if (e.code === "Enter") {
-      checkWord();
-    }
-  };
+  const loading = isLoading || isLoadingMutation ? <Spinner /> : null;
+  const messageError =
+    error || errorMutation ? (
+      <ErrorMessage>{error && errorMutation}</ErrorMessage>
+    ) : null;
 
-  useEffect(() => {
-    dispatch(fetchCurrentWordList(id));
-    // getRandomWord();
+  const content = filteredWords.length ? (
+    <CardWord
+      word={randomWord}
+      changeWord={changeWord}
+      learnWord={changeIsLearnedWord}
+    />
+  ) : (
+    <p style={{ padding: "2rem" }}>You have already learned this wordlist</p>
+  );
 
-    // eslint-disable-next-line
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    getRandomWord();
-    // eslint-disable-next-line
-  }, [currentWordList]);
-
-  const fetching = loading && <Spinner />;
-
-  const content =
-    !loading &&
-    !error &&
-    (filteredWords.length ? (
-      <CardBody>
-        <h3>{randomWord?.translate?.toLowerCase()}</h3>
-        <p>{randomWord?.definition}</p>
-        <Button onClick={changeWord}>Change word</Button>
-        <Input
-          placeholder="Enter a word"
-          value={inputWord}
-          onChange={(e) => setInputWord(e.target.value)}
-          onKeyPress={onHandlerEnter}
-        />
-      </CardBody>
-    ) : (
-      <p style={{ padding: "2rem" }}>You have already learned this wordlist</p>
-    ));
+  const wordCard = !isLoading && !error && content;
 
   return (
     <div>
-      <ArrowButton onClick={() => navigate(-1)}>
-        <IoArrowBack /> Back
-      </ArrowButton>
-      <Card>
-        {fetching}
-        {content}
-      </Card>
+      <ArrowBack />
+      {loading}
+      {messageError}
+      {wordCard}
     </div>
   );
 };
